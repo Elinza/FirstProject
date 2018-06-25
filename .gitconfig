@@ -1,0 +1,9 @@
+[user]
+	email = xielinyue@iairfly.com
+	name = XLY
+[core]
+	editor = vim
+[merge]
+	tool = vimdiff
+[push]
+	default = simple
