@@ -6,16 +6,7 @@ name=0
 size=0
 file=0
 if [ "$1" == "--clean" ]; then
-    find . -name "*.bin" -exec rm -f {} \; 
-#    for((i=1;i<=45;i++))
-#        do
-#        c=$(($a+$b))
-#        name=`printf '%04d' $i`
-#        file=$name.bin        
-#        rm -f $file
-#        a=$b
-#        b=$c
-#        done
+    find . -name "*.bin" -exec rm -f {} \;
 else
     for((i=1;i<=45;i++))
         do
@@ -27,4 +18,5 @@ else
         a=$b
         b=$c
         done
-fi 
+fi
+
