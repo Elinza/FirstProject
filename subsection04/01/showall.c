@@ -11,9 +11,8 @@
 
 
 
-int main()
+int main(int argc, char ** argv)
 {
-    int i = 0;
     struct ifreq *ifr = NULL;
     struct ifconf ifc;
     unsigned char buf[BUFF_SIZE] = {0};
@@ -33,8 +32,7 @@ int main()
     }
 
     ifr = (struct ifreq*)buf;
-    ifr++;
-    for (i = 1; i < (int)(ifc.ifc_len / sizeof(struct ifreq)); i++) {
+    strcpy(ifr->ifr_name, argv[1]);
         printf("\n%s", ifr->ifr_name);
 
         if (ioctl(sock, SIOCGIFFLAGS, ifr) >= 0) {
@@ -53,28 +51,26 @@ int main()
                     hd[3], hd[4], hd[5]);
         }
         else
-            printf("ioctl SIOCGIFHWADDR error");
+            printf("ioctl SIOCGIFHWADDR error\n");
 
         if (ioctl(sock, SIOCGIFADDR, ifr) >= 0)
             printf("IP:%s\n",inet_ntoa(((struct sockaddr_in *)
                             &(ifr->ifr_addr))->sin_addr));
         else
-            perror("ioctl SIOCGIFADDR error");
+            perror("ioctl SIOCGIFADDR error\n");
 
         if (ioctl(sock, SIOCGIFBRDADDR, ifr) >=0)
             printf("Bcast:%s\n", inet_ntoa(((struct sockaddr_in *)
                             &(ifr->ifr_broadaddr))->sin_addr));
         else
-            perror("ioctl SIOCGIFBRDADDR error");
+            perror("ioctl SIOCGIFBRDADDR error\n");
 
         if (ioctl(sock, SIOCGIFNETMASK, ifr) >= 0)
             printf("Mask:%s\n", inet_ntoa(((struct sockaddr_in *)
                             &(ifr->ifr_netmask))->sin_addr));
         else
-            perror("ioctl SIOCGIFNETMASK error");
+            perror("ioctl SIOCGIFNETMASK error\n");
 
-        ifr++;
-    }
     close(sock);
     return 0;
 }
