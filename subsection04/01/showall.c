@@ -6,19 +6,28 @@
 #include <net/if.h>
 #include <arpa/inet.h>
 #include <unistd.h>
+#include <stdlib.h>
 
 #define BUFF_SIZE 1024
 
 
 
-int main(int argc, char ** argv)
+int main(int argc, char *argv[])
 {
     struct ifreq *ifr = NULL;
     struct ifconf ifc;
     unsigned char buf[BUFF_SIZE] = {0};
     int sock = socket(AF_INET, SOCK_DGRAM,0);
+    char temp[BUFF_SIZE];
     ifc.ifc_len = BUFF_SIZE;
     ifc.ifc_buf = (caddr_t)buf;
+
+    while (argv[1] == NULL) {
+        printf("Please enter a interface:");
+        scanf("%s",temp);
+        argv[1] = (char *)malloc(strlen(temp));
+        strcpy(argv[1],temp);
+    }
 
     if (sock < 0) {
         perror("create socket failed:");
