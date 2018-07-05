@@ -7,10 +7,10 @@
 static void SigPrint(int signo)
 {
     switch(signo){
-        case 3:
-        case 15:
+        case SIGTERM:
+        case SIGQUIT:
             printf("bye\n");exit(0);break;
-        case 14:
+        case SIGALRM:
             printf("hello\n");alarm(1);break;
     }
 }
