@@ -24,9 +24,9 @@ int main(int argc, char *argv[])
 
     while (argv[1] == NULL) {
         printf("Please enter a interface:");
-        scanf("%s",temp);
+        scanf("%s", temp);
         argv[1] = (char *)malloc(strlen(temp));
-        strcpy(argv[1],temp);
+        strcpy(argv[1], temp);
     }
 
     if (sock < 0) {
@@ -42,6 +42,7 @@ int main(int argc, char *argv[])
 
     ifr = (struct ifreq*)buf;
     strcpy(ifr->ifr_name, argv[1]);
+    free(argv[1]);
         printf("\n%s", ifr->ifr_name);
 
         if (ioctl(sock, SIOCGIFFLAGS, ifr) >= 0) {
