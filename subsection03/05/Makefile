@@ -4,7 +4,7 @@ OBJS = thread.o
 all:$(EXE)
 
 $(EXE):$(OBJS)
-	$(CXX) -o $(EXE) $(OBJS)
+	$(CXX) -o $(EXE) $(OBJS) -lpthread
 
 $.o:$.cc
 	$(CXX) -c $(CXXFLAGS) $< -o $@
