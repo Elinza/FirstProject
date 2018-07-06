@@ -17,7 +17,8 @@ struct foo
 
 void FooAlloc (struct foo *fp)
 {
-        fp->f_count = 0;
+    fp->f_count = 0;
+    pthread_mutex_init(&fp->f_lock, NULL);
 }
 
 void FooAdd(struct foo *fp)
@@ -73,7 +74,6 @@ void *Thread4(void *arg)
 
 void FooRele(struct foo *fp)
 {
-    pthread_mutex_lock(&fp->f_lock);
     pthread_mutex_unlock(&fp->f_lock);
     pthread_mutex_destroy(&fp->f_lock);
 }
