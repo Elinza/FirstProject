@@ -3,8 +3,9 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <sys/types.h>
+#include <time.h>
 
-#define RUN_TIME 1024*1024
+#define RUN_TIME 1000*1000
 
 
 
@@ -82,12 +83,13 @@ int main()
 {
     int err;
     void *tret;
+    time_t start,end;
     pthread_t tid1, tid2, tid3, tid4;
-
+    start = time(NULL);
     FooAlloc(&p);
     FooAlloc(&q);
     FooAlloc(&r);
-    FooAlloc(&s); 
+    FooAlloc(&s);
     err = pthread_create(&tid1, NULL, Thread1, NULL);
     err = pthread_create(&tid2, NULL, Thread2, NULL);
     err = pthread_create(&tid3, NULL, Thread3, NULL);
@@ -103,5 +105,7 @@ int main()
     FooRele(&q);
     FooRele(&r);
     FooRele(&s);
+    end = time(NULL);
+    printf("start:%ld,end:%ld,time:%lds\n", start, end, end - start);
     return 0;
 }
