@@ -5,7 +5,7 @@
 #include <sys/types.h>
 #include <time.h>
 
-#define RUN_TIME 1000*1000
+#define RUN_TIME 1000*1000*50
 
 
 

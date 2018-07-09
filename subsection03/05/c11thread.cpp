@@ -1,55 +1,34 @@
-#include <iostream>
 #include <thread>
 #include <vector>
 #include <mutex>
 #include <atomic>
 #include <time.h>
-#define RUN_TIME 1000*1000
+
+#define RUN_TIME 1000*1000*50
+#define NUM 4
+
 using namespace std;
 
 
-std::atomic<long> p(0);
-std::atomic<long> q(0);
-std::atomic<long> r(0);
-std::atomic<long> s(0);
 
-void Thread1()
-{
-    int i = 0;
-    for (i = 0; i < RUN_TIME; i++) {
-        p++;
-        q++;
-        r++;
-        s++;
-    }
-};
+atomic_int_fast64_t p(0);
+atomic_int_fast64_t q(0);
+atomic_int_fast64_t r(0);
+atomic_int_fast64_t s(0);
 
-void Thread2()
+void Thread(int c)
 {
-    int i = 0;
-    for (i = 0; i < RUN_TIME; i++) {
-        p++;
-        q++;
-        s++;
-    }
-};
+    int64_t i = 0;
 
-void Thread3()
-{
-    int i = 0;
-    for (i = 0; i < RUN_TIME; i++) {
-        p++;
-        r++;
-        s++;
-    }
-};
-
-void Thread4()
-{
-    int i = 0;
-    for (i = 0; i < RUN_TIME; i++) {
-        q++;
-        s++;
+    for (i = 0; i != RUN_TIME; i++) {
+        if (c & 0x01)
+            p++;
+        if (c & 0x02)
+            q++;
+        if (c & 0x04)
+            r++;
+        if (c & 0x08)
+            s++;
     }
 };
 
@@ -57,20 +36,18 @@ int main()
 {
     time_t start, end;
     start = time(NULL);
-    std::thread t1(Thread1);
-    std::thread t2(Thread2);
-    std::thread t3(Thread3);
-    std::thread t4(Thread4);
+
+    std::thread t1(Thread, 0x0f);
+    std::thread t2(Thread, 0x0b);
+    std::thread t3(Thread, 0x0d);
+    std::thread t4(Thread, 0x0a);
+
     t1.join();
     t2.join();
     t3.join();
     t4.join();
-    cout<<"p = "<<p<<endl;
-    cout<<"q = "<<q<<endl;
-    cout<<"r = "<<r<<endl;
-    cout<<"s = "<<s<<endl;
-    end = time(NULL);
-    printf("start=%ld,end=%ld,time: %ld \n", start, end, end - start);
-    return 0;
 
+    end = time(NULL);
+    printf("start=%ld,end=%ld,time: %lds\n", start, end, end - start);
+    return 0;
 }
