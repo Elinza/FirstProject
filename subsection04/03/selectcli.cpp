@@ -6,14 +6,11 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <string.h>
-#include <thread>
-#include <pthread.h>
 
 #define MAXLINE 1024
-#define SUM 1000
-#define PORT 8888
+#define LISTEN_MAX 1000
+#define PORT 9999
 
-using namespace std;
 
 const char* IPaddress = "127.0.0.1";
 int max(int a, int b)
@@ -23,58 +20,60 @@ int max(int a, int b)
 
 void StrCli()
 {
-    int maxfdp1;
-    fd_set rset;
+    int i = 0;
+    int maxfd = 0;
+    int conn;
+    int maxi;
+    int sockfd[LISTEN_MAX];
+    socklen_t clilen;
+    fd_set rset,allset;
     char buf[MAXLINE];
-    int sockfd;
-    struct sockaddr_in servaddr;
+    struct sockaddr_in servaddr, cliaddr;
 
-    sockfd = socket(AF_INET, SOCK_STREAM,0);
     memset(&servaddr, 0,sizeof(servaddr));
     servaddr.sin_family = AF_INET;
     servaddr.sin_port = htons(PORT);
     servaddr.sin_addr.s_addr = inet_addr(IPaddress);
 
     inet_pton(AF_INET, IPaddress, &servaddr.sin_addr);
-    connect(sockfd, (struct sockaddr*)&servaddr, sizeof(servaddr));
-
-    strcpy(buf, "ping\n");
-    send(sockfd, buf, strlen(buf)+1,0);
-    printf("client:%s",buf);
-
+    FD_ZERO(&allset);
+    while (i != LISTEN_MAX) {
+        sockfd[i] = socket(AF_INET, SOCK_STREAM, 0);
+        if (connect(sockfd[i], (struct sockaddr*)&servaddr,
+             sizeof(servaddr)) < 0)
+            sockfd[i] = -1;
+        strcpy(buf, "ping\n");
+        send(sockfd[i], buf, strlen(buf)+1,0);
+        printf("client send:%s",buf);
+        maxfd = max(maxfd,sockfd[i]) + 1;
+        FD_SET(sockfd[i], &allset);
+        i++;
+    }
     FD_ZERO(&rset);
+    maxi = -1;
 
     while (1) {
-        maxfdp1 = max(FD_SETSIZE,sockfd) + 1;
-        FD_SET(sockfd, &rset);
-        select(maxfdp1, &rset, NULL, NULL, NULL);
-
-        if (FD_ISSET(sockfd, &rset)) {
-            recv(sockfd, buf, sizeof(buf), 0);
-            printf("server:%s",buf);
-            sleep(10);
-            return ;
+        rset = allset;
+        select(maxfd, &rset, NULL, NULL, NULL);
+        for (i = 0; i <= LISTEN_MAX; i++) {
+            if (sockfd[i] < 0)
+                continue;
+            if (FD_ISSET(sockfd[i], &rset)) {
+               if (recv(sockfd[i], buf, sizeof(buf), 0) > 0) {
+                   printf("server:%s",buf);
+               }
+               else {
+                   printf("server send failed\n");
+                   close(sockfd[i]);
+                   FD_CLR(sockfd[i], &allset);
+               }
+            }
         }
     }
 }
 
 int main()
 {
-    time_t start, end;
-    start = time(NULL);
-    int i;
-    thread* t[SUM];
-    for (i = 0; i < SUM;i++) {
-         t[i] = new thread(StrCli);
-    }
-    for (i = 0; i < SUM;i++) {
-        if(t[i] != NULL) {
-          t[i]->join();
-          delete t[i];
-          t[i] = NULL;
-       }
-    }
-    end = time(NULL);
-    printf("time=%ld\n", end - start);
+    StrCli();
     return 0;
 }

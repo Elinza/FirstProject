@@ -15,7 +15,7 @@
 
 int main()
 {
-    int clientId;
+    int clientId = 0;
     int i, maxi, maxfd, listenfd, connfd, sockfd;
     int nready, client[FD_SETSIZE];
     ssize_t n;
@@ -47,7 +47,7 @@ int main()
             clilen = sizeof(cliaddr);
             connfd = accept(listenfd, (struct sockaddr*)&cliaddr, &clilen);
             printf("new client:%s,port %d\n", inet_ntop(AF_INET,
-                   &cliaddr.sin_addr, buf, sizeof(buf)),ntohs(cliaddr.sin_port));
+             &cliaddr.sin_addr, buf, sizeof(buf)),ntohs(cliaddr.sin_port));
             for (i = 0; i < FD_SETSIZE; i++)
                 if(client[i] < 0) {
                     client[i] = connfd;
